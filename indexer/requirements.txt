@@ -1,0 +1,4 @@
+# Core dependencies for the iMessage indexer
+sqlite3-utils>=3.30.0
+python-dateutil>=2.8.2
+dataclasses>=0.6; python_version < "3.7"
