@@ -12,7 +12,8 @@ from pathlib import Path
 
 from .chat_db_parser import ChatDBParser, Message, Chat
 from .chunker import MessageChunker, MessageChunk  
-from .embeddings import EmbeddingGenerator, EmbeddingIndex, EmbeddingResult
+from .embeddings import EmbeddingGenerator, EmbeddingResult
+from .vector_store import VectorStoreManager
 
 
 class iMessageIndexer:
@@ -25,7 +26,8 @@ class iMessageIndexer:
         embedding_model_name: Optional[str] = None,
         chunk_strategy: str = 'adaptive',
         cache_dir: str = '.imessage_cache',
-        openai_api_key: Optional[str] = None
+        openai_api_key: Optional[str] = None,
+        vector_store_type: str = 'chromadb'
     ):
         """
         Initialize the iMessage indexer
@@ -37,12 +39,14 @@ class iMessageIndexer:
             chunk_strategy: 'adaptive', 'time_window', 'daily', or 'participant'
             cache_dir: Directory for caching embeddings and indexes
             openai_api_key: OpenAI API key if using OpenAI embeddings
+            vector_store_type: 'chromadb' or 'memory' for vector storage
         """
         self.db_path = db_path
         self.embedding_model = embedding_model
         self.chunk_strategy = chunk_strategy
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
+        self.vector_store_type = vector_store_type
         
         # Initialize components
         self.chunker = MessageChunker()
@@ -54,7 +58,7 @@ class iMessageIndexer:
         )
         
         # Will be populated during indexing
-        self.index: Optional[EmbeddingIndex] = None
+        self.vector_store: Optional[VectorStoreManager] = None
         self.chats: List[Chat] = []
         self.chunks: List[MessageChunk] = []
         
@@ -131,18 +135,39 @@ class iMessageIndexer:
         embedding_results = self.embedding_generator.embed_chunks(all_chunks, use_cache=True)
         print(f"   Generated {len(embedding_results)} embeddings")
         
-        # Step 5: Build search index
-        print("🔍 Building search index...")
-        self.index = EmbeddingIndex(embedding_results[0].embedding_dim)
-        self.index.add_embeddings(embedding_results, all_chunks)
-        index_stats = self.index.stats()
-        print(f"   Indexed {index_stats['total_embeddings']} chunks across {index_stats['unique_chats']} chats")
+        # Step 5: Build vector store
+        print(f"🔍 Building {self.vector_store_type} vector store...")
         
-        # Step 6: Save index if requested
-        if save_index:
+        # Initialize vector store manager
+        if self.vector_store_type == 'chromadb':
+            self.vector_store = VectorStoreManager(
+                store_type='chromadb',
+                persist_directory=str(self.cache_dir / 'chromadb'),
+                collection_name='imessage_chunks'
+            )
+        else:
+            self.vector_store = VectorStoreManager(
+                store_type='memory',
+                embedding_dim=embedding_results[0].embedding_dim
+            )
+        
+        # Add chunks to vector store
+        self.vector_store.add_chunks(embedding_results, all_chunks)
+        index_stats = self.vector_store.get_stats()
+        
+        if self.vector_store_type == 'chromadb':
+            print(f"   Indexed {index_stats['total_chunks']} chunks in ChromaDB")
+        else:
+            print(f"   Indexed {index_stats['total_embeddings']} chunks in memory")
+        
+        # Step 6: Vector store is automatically persisted for ChromaDB
+        if save_index and self.vector_store_type == 'chromadb':
+            print(f"💾 Vector store persisted to {self.cache_dir / 'chromadb'}")
+        elif save_index and self.vector_store_type == 'memory':
+            # For memory store, save as before
             index_path = self.cache_dir / f"imessage_index_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-            self.index.save(str(index_path))
-            print(f"💾 Saved index to {index_path}")
+            self.vector_store.store.save(str(index_path))
+            print(f"💾 Saved memory index to {index_path}")
         
         # Step 7: Save metadata
         metadata = {
@@ -168,32 +193,39 @@ class iMessageIndexer:
         
         return metadata
     
-    def search(self, query: str, top_k: int = 5) -> List[Tuple[MessageChunk, float]]:
+    def search(self, query: str, top_k: int = 5, where_filters: Optional[Dict] = None) -> List[Tuple[MessageChunk, float]]:
         """
-        Search the index for relevant message chunks
+        Search the vector store for relevant message chunks
         
         Args:
             query: Search query text
             top_k: Number of results to return
+            where_filters: Optional metadata filters for ChromaDB
             
         Returns:
             List of (MessageChunk, similarity_score) tuples
         """
-        if not self.index:
-            raise ValueError("Index not built. Run run_full_index() first.")
+        if not self.vector_store:
+            raise ValueError("Vector store not built. Run run_full_index() first.")
         
         # Generate embedding for query
         query_embedding = self.embedding_generator.embed_text(query)
         
-        # Search index
-        results = self.index.search_similar(query_embedding, top_k)
+        # Search vector store
+        if self.vector_store_type == 'chromadb':
+            results = self.vector_store.search(query_embedding, top_k, where_filters=where_filters)
+        else:
+            results = self.vector_store.search(query_embedding, top_k)
         
         # Convert results to MessageChunk objects
         chunk_results = []
         for metadata, score in results:
-            # Find the corresponding chunk
-            chunk = next(c for c in self.chunks if c.id == metadata['chunk_id'])
-            chunk_results.append((chunk, score))
+            # Find the corresponding chunk by ID
+            chunk_id = metadata.get('chunk_id') or metadata.get('id')
+            chunk = next((c for c in self.chunks if c.id == chunk_id), None)
+            
+            if chunk:
+                chunk_results.append((chunk, score))
         
         return chunk_results
     
@@ -243,24 +275,39 @@ class iMessageIndexer:
         
         return chat_groups
     
-    def load_existing_index(self, index_path: str) -> None:
-        """Load a previously saved index"""
-        self.index = EmbeddingIndex.load(index_path)
-        print(f"📂 Loaded index from {index_path}")
+    def load_existing_vector_store(self, persist_directory: Optional[str] = None) -> None:
+        """Load a previously saved vector store"""
+        if self.vector_store_type == 'chromadb':
+            # ChromaDB loads automatically from persist directory
+            persist_dir = persist_directory or str(self.cache_dir / 'chromadb')
+            self.vector_store = VectorStoreManager(
+                store_type='chromadb',
+                persist_directory=persist_dir,
+                collection_name='imessage_chunks'
+            )
+            print(f"📂 Loaded ChromaDB vector store from {persist_dir}")
+        else:
+            # For memory store, load from JSON file
+            if not persist_directory:
+                raise ValueError("persist_directory required for memory store")
+            from .embeddings import EmbeddingIndex
+            self.vector_store = VectorStoreManager(store_type='memory')
+            self.vector_store.store = EmbeddingIndex.load(persist_directory)
+            print(f"📂 Loaded memory index from {persist_directory}")
         
         # Load metadata if available
-        metadata_path = Path(index_path).parent / 'latest_index_metadata.json'
+        metadata_path = self.cache_dir / 'latest_index_metadata.json'
         if metadata_path.exists():
             with open(metadata_path) as f:
                 metadata = json.load(f)
-                print(f"   Index from {metadata['indexed_at']} with {metadata['index_stats']['total_embeddings']} chunks")
+                print(f"   Vector store from {metadata['indexed_at']}")
     
     def get_stats(self) -> Dict:
-        """Get comprehensive statistics about the current index"""
+        """Get comprehensive statistics about the current vector store and pipeline"""
         stats = {}
         
-        if self.index:
-            stats['index'] = self.index.stats()
+        if self.vector_store:
+            stats['vector_store'] = self.vector_store.get_stats()
         
         if self.chunks:
             stats['chunks'] = self.chunker.get_chunking_stats(self.chunks)
@@ -270,6 +317,7 @@ class iMessageIndexer:
         
         stats['config'] = {
             'embedding_model': self.embedding_model,
+            'vector_store_type': self.vector_store_type,
             'chunk_strategy': self.chunk_strategy,
             'cache_dir': str(self.cache_dir)
         }
@@ -287,6 +335,8 @@ def main():
     parser.add_argument('--model', choices=['local', 'openai'], default='local', help='Embedding model type')
     parser.add_argument('--chunk-strategy', choices=['adaptive', 'time_window', 'daily', 'participant'], 
                        default='adaptive', help='Message chunking strategy')
+    parser.add_argument('--vector-store', choices=['chromadb', 'memory'], default='chromadb',
+                       help='Vector store type')
     parser.add_argument('--openai-key', help='OpenAI API key (if using OpenAI embeddings)')
     parser.add_argument('--test-search', help='Test search query after indexing')
     
@@ -297,6 +347,7 @@ def main():
         indexer = iMessageIndexer(
             embedding_model=args.model,
             chunk_strategy=args.chunk_strategy,
+            vector_store_type=args.vector_store,
             openai_api_key=args.openai_key
         )
         

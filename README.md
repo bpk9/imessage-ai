@@ -90,7 +90,7 @@ cd indexer && pip install -r requirements.txt && python index.py
 
 - [x] Project scaffold & PRD
 - [x] chat.db SQLite parser
-- [ ] Message chunking & embedding pipeline
+- [x] Message chunking & embedding pipeline
 - [ ] ChromaDB vector store integration
 - [ ] Ollama local LLM integration
 - [ ] FastAPI backend with RAG pipeline
