@@ -6,17 +6,46 @@ Your iMessage data never leaves your machine. No API keys required for the defau
 
 ## Demo
 
-> _Coming soon_
+```bash
+$ python imessage_ai.py chat
+
+🚀 iMessage AI Chat
+==================
+Ask questions about your iMessage history!
+Commands: /help, /stats, /clear, /quit
+
+💬 You: What did I talk about with Sarah yesterday?
+
+🤔 Thinking...
+
+🤖 Assistant: Based on your conversation with Sarah yesterday, you discussed dinner plans for Friday night. You suggested trying that new Italian restaurant downtown, and Sarah mentioned she'd like to invite Mike and Jessica too. You also talked about the work project deadline coming up next week.
+
+📚 Sources:
+  1. You, Sarah | 2026-02-15 18:30 - 19:45
+     [2026-02-15 18:30] You: Hey Sarah, still on for dinner Friday?
+     [2026-02-15 18:31] Sarah: Yes! That Italian place you mentioned sounds great...
+```
 
 ## Quick Start
 
 ```bash
-brew install imessage-ai
-imessage-ai setup    # indexes your chat.db
-imessage-ai chat     # opens web UI at localhost:3000
+# Install Ollama for local AI
+curl -fsSL https://ollama.ai/install.sh | sh
+ollama pull llama3.2
+
+# Clone and setup
+git clone https://github.com/bpk9/imessage-ai.git
+cd imessage-ai
+pip install -r indexer/requirements.txt
+
+# Index your messages
+python imessage_ai.py setup --days 30
+
+# Start chatting!
+python imessage_ai.py chat
 ```
 
-Three commands. That's it.
+Four commands. That's it.
 
 ## How It Works
 
@@ -89,10 +118,10 @@ cd indexer && pip install -r requirements.txt && python index.py
 ## Roadmap
 
 - [x] Project scaffold & PRD
-- [x] chat.db SQLite parser
+- [x] chat.db SQLite parser  
 - [x] Message chunking & embedding pipeline
 - [x] ChromaDB vector store integration
-- [ ] Ollama local LLM integration
+- [x] Ollama local LLM integration
 - [ ] FastAPI backend with RAG pipeline
 - [ ] Next.js web UI — chat interface
 - [ ] Conversation browser & search

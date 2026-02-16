@@ -8,7 +8,9 @@ from .chat_db_parser import ChatDBParser, Message, Handle, Chat
 from .chunker import MessageChunker, MessageChunk
 from .embeddings import EmbeddingGenerator, EmbeddingIndex, EmbeddingResult
 from .vector_store import ChromaVectorStore, VectorStoreManager
+from .llm_integration import OllamaLLM, OpenAILLM, AnthropicLLM, RAGSystem, LLMManager
 from .pipeline import iMessageIndexer
+from .chat_interface import iMessageChat
 
 __version__ = "0.1.0"
 __all__ = [
@@ -16,5 +18,6 @@ __all__ = [
     "MessageChunker", "MessageChunk", 
     "EmbeddingGenerator", "EmbeddingIndex", "EmbeddingResult",
     "ChromaVectorStore", "VectorStoreManager",
-    "iMessageIndexer"
+    "OllamaLLM", "OpenAILLM", "AnthropicLLM", "RAGSystem", "LLMManager",
+    "iMessageIndexer", "iMessageChat"
 ]
