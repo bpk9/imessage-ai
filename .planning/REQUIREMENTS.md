@@ -114,53 +114,53 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | — | Pending |
-| DATA-02 | — | Pending |
-| DATA-03 | — | Pending |
-| DATA-04 | — | Pending |
-| DATA-05 | — | Pending |
-| DATA-06 | — | Pending |
-| DATA-07 | — | Pending |
-| INDX-01 | — | Pending |
-| INDX-02 | — | Pending |
-| INDX-03 | — | Pending |
-| INDX-04 | — | Pending |
-| INDX-05 | — | Pending |
-| CHAT-01 | — | Pending |
-| CHAT-02 | — | Pending |
-| CHAT-03 | — | Pending |
-| CHAT-04 | — | Pending |
-| CHAT-05 | — | Pending |
-| CLI-01 | — | Pending |
-| CLI-02 | — | Pending |
-| CLI-03 | — | Pending |
-| CLI-04 | — | Pending |
-| CLI-05 | — | Pending |
-| CLI-06 | — | Pending |
-| CLI-07 | — | Pending |
-| LLM-01 | — | Pending |
-| LLM-02 | — | Pending |
-| LLM-03 | — | Pending |
-| LLM-04 | — | Pending |
-| INSI-01 | — | Pending |
-| INSI-02 | — | Pending |
-| INSI-03 | — | Pending |
-| INSI-04 | — | Pending |
-| INSI-05 | — | Pending |
-| EXPRT-01 | — | Pending |
-| EXPRT-02 | — | Pending |
-| EXPRT-03 | — | Pending |
-| EXPRT-04 | — | Pending |
-| DIST-01 | — | Pending |
-| DIST-02 | — | Pending |
-| DIST-03 | — | Pending |
-| DIST-04 | — | Pending |
+| DATA-01 | Phase 2 | Pending |
+| DATA-02 | Phase 2 | Pending |
+| DATA-03 | Phase 2 | Pending |
+| DATA-04 | Phase 2 | Pending |
+| DATA-05 | Phase 2 | Pending |
+| DATA-06 | Phase 2 | Pending |
+| DATA-07 | Phase 2 | Pending |
+| INDX-01 | Phase 3 | Pending |
+| INDX-02 | Phase 3 | Pending |
+| INDX-03 | Phase 3 | Pending |
+| INDX-04 | Phase 3 | Pending |
+| INDX-05 | Phase 3 | Pending |
+| CHAT-01 | Phase 4 | Pending |
+| CHAT-02 | Phase 4 | Pending |
+| CHAT-03 | Phase 4 | Pending |
+| CHAT-04 | Phase 4 | Pending |
+| CHAT-05 | Phase 4 | Pending |
+| CLI-01 | Phase 5 | Pending |
+| CLI-02 | Phase 5 | Pending |
+| CLI-03 | Phase 5 | Pending |
+| CLI-04 | Phase 5 | Pending |
+| CLI-05 | Phase 5 | Pending |
+| CLI-06 | Phase 5 | Pending |
+| CLI-07 | Phase 5 | Pending |
+| LLM-01 | Phase 4 | Pending |
+| LLM-02 | Phase 4 | Pending |
+| LLM-03 | Phase 4 | Pending |
+| LLM-04 | Phase 4 | Pending |
+| INSI-01 | Phase 6 | Pending |
+| INSI-02 | Phase 6 | Pending |
+| INSI-03 | Phase 6 | Pending |
+| INSI-04 | Phase 6 | Pending |
+| INSI-05 | Phase 6 | Pending |
+| EXPRT-01 | Phase 7 | Pending |
+| EXPRT-02 | Phase 7 | Pending |
+| EXPRT-03 | Phase 7 | Pending |
+| EXPRT-04 | Phase 7 | Pending |
+| DIST-01 | Phase 8 | Pending |
+| DIST-02 | Phase 8 | Pending |
+| DIST-03 | Phase 8 | Pending |
+| DIST-04 | Phase 8 | Pending |
 
 **Coverage:**
 - v1 requirements: 37 total
-- Mapped to phases: 0
-- Unmapped: 37 ⚠️
+- Mapped to phases: 37
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-16*
-*Last updated: 2026-02-16 after initial definition*
+*Last updated: 2026-02-16 after roadmap creation*
