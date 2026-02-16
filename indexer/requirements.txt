@@ -2,3 +2,12 @@
 sqlite3-utils>=3.30.0
 python-dateutil>=2.8.2
 dataclasses>=0.6; python_version < "3.7"
+
+# Embedding dependencies (optional)
+sentence-transformers>=2.2.0  # For local embeddings
+openai>=1.0.0  # For OpenAI embeddings (optional)
+
+# Additional utilities
+numpy>=1.21.0  # Required by sentence-transformers
+scikit-learn>=1.0.0  # For similarity calculations (fallback)
+tqdm>=4.62.0  # Progress bars

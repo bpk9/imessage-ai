@@ -89,7 +89,7 @@ cd indexer && pip install -r requirements.txt && python index.py
 ## Roadmap
 
 - [x] Project scaffold & PRD
-- [ ] chat.db SQLite parser
+- [x] chat.db SQLite parser
 - [ ] Message chunking & embedding pipeline
 - [ ] ChromaDB vector store integration
 - [ ] Ollama local LLM integration
