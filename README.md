@@ -123,8 +123,8 @@ cd indexer && pip install -r requirements.txt && python index.py
 - [x] ChromaDB vector store integration
 - [x] Ollama local LLM integration
 - [x] FastAPI backend with RAG pipeline
-- [ ] Next.js web UI — chat interface
-- [ ] Conversation browser & search
+- [x] Next.js web UI — chat interface
+- [x] Conversation browser & search
 - [ ] Insights dashboard (patterns, sentiment, stats)
 - [x] CLI tool (`setup`, `index`, `chat`)
 - [ ] Homebrew formula

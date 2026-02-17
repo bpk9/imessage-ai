@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# iMessage AI Web UI
 
-## Getting Started
+Modern web interface for chatting with your iMessage history using AI.
 
-First, run the development server:
+## Features
+
+- **Chat Interface** - Ask natural language questions about your messages
+- **Conversation Browser** - Browse all your conversations with statistics
+- **Semantic Search** - Find messages by meaning, not just keywords
+- **Real-time Streaming** - See AI responses as they're generated
+- **Source Citations** - See which messages informed each AI response
+- **Fully Local** - Your data never leaves your computer
+
+## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Requirements
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Node.js 18+
+- FastAPI backend running on port 8000
+- Indexed iMessage database
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Usage
 
-## Learn More
+1. **Start the FastAPI server** (from repo root):
+   ```bash
+   cd server && uvicorn main:app --reload
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Start the web UI** (from web directory):
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Navigate to http://localhost:3000**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Pages
 
-## Deploy on Vercel
+- **/** - Main chat interface for AI conversations
+- **/conversations** - Browse your message history
+- **/search** - Advanced semantic search
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Architecture
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Next.js UI    │────▶│   FastAPI       │────▶│   RAG Pipeline  │
+│   (Port 3000)   │     │   (Port 8000)   │     │   (ChromaDB +   │
+│                 │     │                 │     │    Ollama)      │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+The web UI communicates with the FastAPI backend, which handles all the AI processing and database queries.
+
+## Development
+
+Built with:
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Server-Sent Events** - Real-time streaming (future)
+
+## Privacy
+
+- All AI processing happens locally via Ollama
+- No data is sent to external servers
+- FastAPI backend runs on your machine
+- Vector database is stored locally
