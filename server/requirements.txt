@@ -1,0 +1,11 @@
+# FastAPI server dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Core functionality (reuse from indexer)
+-r ../indexer/requirements.txt
+
+# Additional server utilities
+pydantic>=2.5.0
+python-jose[cryptography]>=3.3.0  # For future auth if needed

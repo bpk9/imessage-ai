@@ -105,7 +105,7 @@ imessage-ai/
 git clone https://github.com/bpk9/imessage-ai.git
 cd imessage-ai
 
-# Backend
+# Backend API
 cd server && pip install -r requirements.txt && uvicorn main:app --reload
 
 # Frontend
@@ -122,11 +122,11 @@ cd indexer && pip install -r requirements.txt && python index.py
 - [x] Message chunking & embedding pipeline
 - [x] ChromaDB vector store integration
 - [x] Ollama local LLM integration
-- [ ] FastAPI backend with RAG pipeline
+- [x] FastAPI backend with RAG pipeline
 - [ ] Next.js web UI — chat interface
 - [ ] Conversation browser & search
 - [ ] Insights dashboard (patterns, sentiment, stats)
-- [ ] CLI tool (`setup`, `index`, `chat`)
+- [x] CLI tool (`setup`, `index`, `chat`)
 - [ ] Homebrew formula
 - [ ] Docker Compose one-click setup
 - [ ] OpenAI/Anthropic cloud mode
